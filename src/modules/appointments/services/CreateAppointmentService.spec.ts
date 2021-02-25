@@ -23,6 +23,6 @@ describe('CreateAppointment', () => {
     const appointmentDate = new Date(2021, 2, 20, 9);
     await creteAppointment.execute({date: appointmentDate, provider_id: '123123'});
 
-    expect(creteAppointment.execute({date: appointmentDate, provider_id: '123123'})).rejects.toBeInstanceOf(AppError);
+    await expect(creteAppointment.execute({date: appointmentDate, provider_id: '123123'})).rejects.toBeInstanceOf(AppError);
   })
 });

@@ -33,7 +33,7 @@ class AuthenticateService {
             throw new AppError('E-mail do not existing!', 401);
         }
 
-        const passwordCompare = this.hashProvider.compareHash(password, findUserbyEmail.password);
+        const passwordCompare = await this.hashProvider.compareHash(password, findUserbyEmail.password);
 
         if (!passwordCompare) {
             throw new AppError('E-mail or password are wrong!');

@@ -33,7 +33,7 @@ describe('UpdateUserAvatar', () => {
     const fakeStorageProvider = new FakeStorageProvider();
     const updateUserAvatar = new UpdateUserAvatarService(fakeUserRepository, fakeStorageProvider);
 
-    expect(updateUserAvatar.execute(
+    await expect(updateUserAvatar.execute(
       {
         userId: '123123',
         avatarFileName: 'avatar.jpg'
