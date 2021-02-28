@@ -1,9 +1,8 @@
 import {inject,injectable} from 'tsyringe';
-import User from '@modules/users/infra/typeorm/entities/users';
-import AppError from '../../../shared/errors/AppError';
 import IUsersRepository from '@modules/users/repositories/IUsersRepository';
-import IMailProvider from '@shared/container/providers/MailProvider/models/IMailProvider';
 import IUserTokensRepository from '@modules/users/repositories/IUsersTokenRepository';
+import IHashProvider from '@modules/users/providers/HashProviders/models/IHashProvider';
+import {isAfter, addHours} from 'date-fns';
 
 interface IRequest {
     password: string;
@@ -17,7 +16,10 @@ class ResetPassordService {
     private usersRepository: IUsersRepository,
 
     @inject('UserTokensRepository')
-    private userTokensRepository: IUserTokensRepository
+    private userTokensRepository: IUserTokensRepository,
+
+    @inject('IHashProvider')
+    private hashProvider: IHashProvider
 
   ) {}
 
@@ -32,7 +34,13 @@ class ResetPassordService {
       if(!user)
         throw new Error('User does not exits');
 
-      user.password = password;
+      const tokenCreatedAt = userToken.created_at;
+      const compareDate = addHours(tokenCreatedAt, 2);
+
+      if(isAfter(Date.now(), compareDate))
+        throw new Error('Token expired');
+
+      user.password = await this.hashProvider.generateHash(password);
 
       await this.usersRepository.save(user);
     }
